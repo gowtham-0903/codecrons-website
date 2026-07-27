@@ -37,8 +37,8 @@ export default function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="font-bold text-xl text-fg">
-          Codecrons {/* TODO: replace with <Image src="/logo.png" ... /> once logo is added */}
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.png" alt="Codecrons" width={160} height={48} priority className="h-10 w-auto" />
         </Link>
 
         {/* Desktop nav */}
