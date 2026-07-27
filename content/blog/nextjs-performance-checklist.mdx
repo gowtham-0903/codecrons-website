@@ -1,0 +1,96 @@
+---
+title: "The Next.js Performance Checklist We Actually Use"
+date: "2026-03-11"
+excerpt: "Core Web Vitals are mostly won or lost in five decisions. These are the ones we check on every project before it ships."
+author: "Codecrons"
+tags: ["Next.js", "Performance"]
+---
+
+Performance work has a bad reputation because it is usually done last, under
+time pressure, by someone profiling a page that was never designed to be fast.
+Done at the start it is mostly a series of small, boring decisions.
+
+Here is the list we run through before any Next.js project goes live.
+
+## 1. Server Components by default
+
+The App Router renders on the server unless you opt out. Every `"use client"`
+directive ships that component and its imports to the browser.
+
+The mistake we see most often is a `"use client"` at the top of a page because
+one small piece needs interactivity. Push the directive down to the smallest
+component that genuinely needs it — a filter bar, a form, a menu toggle — and
+leave the page itself on the server.
+
+## 2. Images through `next/image`, with `sizes`
+
+`next/image` handles format negotiation and lazy loading, but it only produces
+correctly sized files if you tell it how large the image will render:
+
+```tsx
+<Image
+  src={project.image}
+  alt={project.title}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+/>
+```
+
+Without `sizes`, a browser on a phone downloads the desktop-width file. It is a
+one-line change and routinely the single largest LCP improvement available.
+
+Set `priority` on the one image above the fold, and nothing else.
+
+## 3. Fonts through `next/font`
+
+Self-hosting fonts through `next/font/google` removes a third-party connection
+and, more importantly, generates a fallback with matching metrics — which is
+what eliminates the layout shift when the real font arrives.
+
+```tsx
+const publicSans = Public_Sans({
+  variable: "--font-public-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+```
+
+Load two families at most. Every additional weight is another file.
+
+## 4. Defer anything heavy and below the fold
+
+Third-party embeds, WebGL canvases, chart libraries, and video players should
+not be in the initial bundle. `next/dynamic` with `ssr: false` handles the
+import; an `IntersectionObserver` handles the timing:
+
+```tsx
+const Scene = dynamic(() => import("./Scene"), { ssr: false });
+// …then mount <Scene /> only once the container is near the viewport
+```
+
+Note that `ssr: false` is only valid inside a Client Component. In the App
+Router, calling it from a Server Component is a build error — the usual fix is
+a thin client wrapper that owns the dynamic import.
+
+While you are there: check `prefers-reduced-motion` and skip the animation
+entirely for users who asked you to. It is both an accessibility requirement
+and free performance for the people who opt in.
+
+## 5. Reserve space for everything
+
+Cumulative Layout Shift comes almost entirely from content that arrives after
+first paint without a reserved box: images without dimensions, ads, embeds,
+banners, and fonts.
+
+Give every one of them an explicit height or aspect ratio. `aspect-[16/9]` on a
+wrapper costs nothing and removes an entire category of CLS.
+
+## Measure on the right thing
+
+Lighthouse in a desktop browser on a fast connection tells you very little.
+What matters is field data — real devices, real networks. Chrome UX Report data
+through PageSpeed Insights, or `web-vitals` reporting to your own endpoint, is
+what should decide whether the work is done.
+
+Our threshold before launch: LCP under 2.5s, INP under 200ms, CLS under 0.1 —
+at the 75th percentile, on mobile. Not the median, and not on a laptop.

@@ -2,55 +2,66 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
-import { Suspense, useRef, useMemo } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-// TODO: Implement ParticleField — subtle animated particles for Blog page background
-//
-// Scene contents:
-//   - 3000–5000 tiny points distributed in a sphere
-//   - Slowly rotate on X and Y axis
-//   - Color: accent-mint (#66FFD9), small size (~0.003–0.005)
-//   - depthWrite: false to avoid z-fighting
-//   - Transparent background (no fog)
-//
-// Note: if you want to use maath/random for sphere distribution, install:
-//   npm install maath
-// Then: import * as random from "maath/random/dist/maath-random.esm"
-//       const sphere = random.inSphere(new Float32Array(5000), { radius: 1.5 })
+/**
+ * Blog page — ambient particle field.
+ *
+ * Two counter-rotating shells (mint and purple) so the field has depth
+ * without needing post-processing.
+ */
 
-function Particles() {
+const COUNT = 3200;
+
+/** Even-ish distribution inside a sphere of the given radius. */
+function sphericalPositions(count: number, radius: number) {
+  const arr = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = Math.cbrt(Math.random()) * radius;
+    arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    arr[i * 3 + 2] = r * Math.cos(phi);
+  }
+  return arr;
+}
+
+function Shell({
+  count,
+  radius,
+  color,
+  size,
+  opacity,
+  speed,
+}: {
+  count: number;
+  radius: number;
+  color: string;
+  size: number;
+  opacity: number;
+  speed: number;
+}) {
   const ref = useRef<THREE.Points>(null);
-
-  // Simple random sphere distribution without maath dependency
-  const positions = useMemo(() => {
-    const count = 4000;
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const r = Math.cbrt(Math.random()) * 2;
-      arr[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
-      arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      arr[i * 3 + 2] = r * Math.cos(phi);
-    }
-    return arr;
-  }, []);
+  const positions = useMemo(() => sphericalPositions(count, radius), [count, radius]);
 
   useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.x -= delta / 12;
-    ref.current.rotation.y -= delta / 18;
+    const points = ref.current;
+    if (!points) return;
+    points.rotation.x -= (delta * speed) / 12;
+    points.rotation.y -= (delta * speed) / 18;
   });
 
   return (
     <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
       <PointMaterial
         transparent
-        color="#66FFD9"
-        size={0.004}
+        color={color}
+        size={size}
         sizeAttenuation
         depthWrite={false}
+        opacity={opacity}
       />
     </Points>
   );
@@ -59,9 +70,28 @@ function Particles() {
 export default function ParticleField() {
   return (
     <div className="w-full h-full absolute inset-0 pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 3], fov: 60 }}>
+      <Canvas
+        camera={{ position: [0, 0, 3] }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: false, alpha: true }}
+      >
         <Suspense fallback={null}>
-          <Particles />
+          <Shell
+            count={COUNT}
+            radius={1.9}
+            color="#00CC99"
+            size={0.006}
+            opacity={0.9}
+            speed={1}
+          />
+          <Shell
+            count={Math.floor(COUNT / 2)}
+            radius={1.35}
+            color="#6670FF"
+            size={0.009}
+            opacity={0.65}
+            speed={-1.4}
+          />
         </Suspense>
       </Canvas>
     </div>

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --bg: #ffffff;
@@ -10,7 +11,7 @@
   --accent-purple: #6670ff;
   --accent-mint: #66ffd9;
   --accent-teal: #00cc99;
-  --border: rgba(0,0,0,0.08);
+  --border: rgba(0, 0, 0, 0.08);
 }
 
 @theme inline {
@@ -30,6 +31,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* html is the scroll container, so the guard below must apply here too. */
+  overflow-x: clip;
 }
 
 body {
@@ -37,12 +40,158 @@ body {
   color: var(--fg);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /*
+   * Scroll-reveal elements start translated on the X axis, which would widen
+   * the document until they animate in. `clip` (not `hidden`) suppresses that
+   * without creating a scroll container, so position: sticky still works.
+   */
+  overflow-x: clip;
 }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+::selection {
+  background: var(--accent-orange);
+  color: #fff;
 }
+
+/* Keyboard focus ring — applied globally so every interactive element is reachable */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid var(--accent-purple);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------
+   Marquee / ticker
+   Two identical halves translate -50% for a seamless infinite loop.
+   --------------------------------------------------------------- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .animate-marquee {
   animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+
+/* Slower variant used by the testimonial carousel */
+.animate-marquee-slow {
+  animation: marquee 45s linear infinite;
+  will-change: transform;
+}
+
+/* Fade the left/right edges of any horizontally scrolling strip */
+.edge-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+/* Animated gradient sweep used on hero/CTA headline accents */
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.text-gradient {
+  /*
+   * Orange → purple only. Adding teal to the ramp blends through olive at the
+   * midpoint, which reads as muddy against white.
+   */
+  background: linear-gradient(
+    90deg,
+    var(--accent-orange),
+    var(--accent-purple),
+    var(--accent-orange)
+  );
+  background-size: 300% 100%;
+  animation: gradient-pan 8s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Soft radial glow sitting behind the 3D canvases */
+.scene-glow::before {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent-purple) 18%, transparent),
+    transparent 70%
+  );
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Subtle dotted grid used as a section background texture */
+.dot-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(0, 0, 0, 0.07) 1px,
+    transparent 0
+  );
+  background-size: 28px 28px;
+}
+
+/* ---------------------------------------------------------------
+   Blog prose overrides — maps @tailwindcss/typography onto our tokens
+   --------------------------------------------------------------- */
+.prose-codecrons {
+  --tw-prose-body: var(--fg-muted);
+  --tw-prose-headings: var(--fg);
+  --tw-prose-links: var(--accent-orange);
+  --tw-prose-bold: var(--fg);
+  --tw-prose-counters: var(--fg-muted);
+  --tw-prose-bullets: var(--accent-purple);
+  --tw-prose-quotes: var(--fg);
+  --tw-prose-quote-borders: var(--accent-purple);
+  --tw-prose-code: var(--fg);
+  --tw-prose-pre-bg: #0f0f0f;
+  --tw-prose-hr: var(--border);
+}
+
+.prose-codecrons :where(h2, h3, h4) {
+  font-family: var(--font-pt-serif), Georgia, serif;
+}
+
+/* ---------------------------------------------------------------
+   Respect users who ask for reduced motion.
+   Kills marquees, gradient pans, and Framer Motion transitions.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

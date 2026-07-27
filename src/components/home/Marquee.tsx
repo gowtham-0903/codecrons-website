@@ -1,12 +1,6 @@
 "use client";
 
-// TODO: Implement infinite horizontal marquee / ticker
-// Items should alternate text-accent-orange and text-accent-purple
-// Each item prefixed with ✦ symbol
-// Speed: ~28s per full cycle (controlled by CSS animation in globals.css .animate-marquee)
-// The items list is duplicated to create a seamless loop
-// Pause on hover: add hover:[animation-play-state:paused] class to the inner div
-// Borders: border-y border-border on the outer wrapper
+import { cn } from "@/lib/utils";
 
 const ITEMS = [
   "Custom Software",
@@ -18,24 +12,37 @@ const ITEMS = [
   "UI/UX Design",
   "Tech Consulting",
   "API Development",
-  "Cloud Solutions",
+  "Cloud Infrastructure",
 ];
 
-export default function Marquee() {
-  const repeated = [...ITEMS, ...ITEMS];
+interface MarqueeProps {
+  className?: string;
+}
 
-  // TODO: implement full styled version
+/**
+ * Infinite ticker. The item list is rendered twice inside a flex row and the
+ * row translates -50%, so the second copy lands exactly where the first began
+ * — no visible seam. Hovering pauses it; reduced-motion users get it static.
+ */
+export default function Marquee({ className }: MarqueeProps) {
   return (
-    <div className="overflow-hidden w-full py-5 border-y border-border bg-bg-subtle">
-      <div className="flex gap-16 animate-marquee whitespace-nowrap hover:[animation-play-state:paused]">
-        {repeated.map((item, i) => (
+    <div
+      className={cn(
+        "relative overflow-hidden w-full py-5 border-y border-border bg-bg-subtle edge-fade",
+        className,
+      )}
+    >
+      <div className="flex w-max gap-16 animate-marquee whitespace-nowrap hover:[animation-play-state:paused]">
+        {[...ITEMS, ...ITEMS].map((item, i) => (
           <span
             key={i}
-            className={`text-sm font-bold tracking-wide ${
-              i % 2 === 0 ? "text-accent-orange" : "text-accent-purple"
-            }`}
+            className={cn(
+              "flex items-center gap-4 text-sm font-bold tracking-wide uppercase",
+              i % 2 === 0 ? "text-accent-orange" : "text-accent-purple",
+            )}
           >
-            ✦ {item}
+            <span aria-hidden>✦</span>
+            {item}
           </span>
         ))}
       </div>

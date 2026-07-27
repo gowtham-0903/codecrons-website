@@ -1,21 +1,42 @@
+/**
+ * Tech stack grid.
+ *
+ * `icon` is a Lucide icon name — the grid renders Lucide glyphs rather than
+ * brand logos so nothing depends on missing files in /public/tech/.
+ * To switch to real brand SVGs later, drop them in /public/tech/ and change
+ * TechStack.tsx to render <Image src={`/tech/${slug}.svg`} />.
+ */
 export interface TechItem {
   name: string;
-  icon: string; // path under /public/tech/ OR a Lucide icon name
+  /** Lucide icon name — see components/home/TechStack.tsx for the map. */
+  icon: string;
   category: "frontend" | "backend" | "ai" | "tools";
 }
 
-// TODO: Add/remove tools to match what Codecrons actually uses
 export const techStack: TechItem[] = [
-  { name: "Next.js", icon: "/tech/nextjs.svg", category: "frontend" },
-  { name: "React", icon: "/tech/react.svg", category: "frontend" },
-  { name: "TypeScript", icon: "/tech/typescript.svg", category: "frontend" },
-  { name: "Tailwind CSS", icon: "/tech/tailwind.svg", category: "frontend" },
-  { name: "Node.js", icon: "/tech/nodejs.svg", category: "backend" },
-  { name: "Python", icon: "/tech/python.svg", category: "backend" },
-  { name: "PostgreSQL", icon: "/tech/postgresql.svg", category: "backend" },
-  { name: "OpenAI", icon: "/tech/openai.svg", category: "ai" },
-  { name: "Figma", icon: "/tech/figma.svg", category: "tools" },
-  { name: "Framer", icon: "/tech/framer.svg", category: "tools" },
-  { name: "Vercel", icon: "/tech/vercel.svg", category: "tools" },
-  { name: "GitHub", icon: "/tech/github.svg", category: "tools" },
+  { name: "Next.js", icon: "Triangle", category: "frontend" },
+  { name: "React", icon: "Atom", category: "frontend" },
+  { name: "TypeScript", icon: "FileCode2", category: "frontend" },
+  { name: "Tailwind CSS", icon: "Wind", category: "frontend" },
+  { name: "React Native", icon: "Smartphone", category: "frontend" },
+  { name: "Node.js", icon: "Hexagon", category: "backend" },
+  { name: "Python", icon: "Braces", category: "backend" },
+  { name: "PostgreSQL", icon: "Database", category: "backend" },
+  { name: "Redis", icon: "Zap", category: "backend" },
+  { name: "Docker", icon: "Container", category: "backend" },
+  { name: "AWS", icon: "Cloud", category: "backend" },
+  { name: "Claude / OpenAI", icon: "Sparkles", category: "ai" },
+  { name: "LangChain", icon: "Link2", category: "ai" },
+  { name: "Vector DBs", icon: "Boxes", category: "ai" },
+  { name: "Figma", icon: "PenTool", category: "tools" },
+  { name: "Vercel", icon: "CloudLightning", category: "tools" },
+  { name: "GitHub", icon: "GitBranch", category: "tools" },
+  { name: "Stripe", icon: "CreditCard", category: "tools" },
 ];
+
+export const techCategories = [
+  { id: "frontend", label: "Frontend" },
+  { id: "backend", label: "Backend & Infra" },
+  { id: "ai", label: "AI" },
+  { id: "tools", label: "Tools" },
+] as const;

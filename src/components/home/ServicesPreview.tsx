@@ -3,58 +3,83 @@
 import { motion } from "motion/react-client";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { services } from "@/data/services";
+import { featuredServices } from "@/data/services";
 import SectionHeader from "@/components/ui/SectionHeader";
+import Badge from "@/components/ui/Badge";
+import { fadeUp, staggerContainer, viewportOnce } from "@/lib/motion";
 
-// TODO: Implement Services Preview section (shows first 4 services)
-// Layout: 2x2 grid on desktop, 1 column on mobile
-// Each card:
-//   - Service number (01, 02...) in accent-purple, small font
-//   - Service title in bold
-//   - Short description in text-fg-muted
-//   - Tags as Badge components
-//   - Hover: card lifts with shadow, ArrowUpRight icon appears top-right
-//   - Clicking the card → navigates to /services#service-id
-// Bottom: "View All Services →" link → /services
-// Animate: fade-up stagger on cards (Framer Motion)
 export default function ServicesPreview() {
-  const preview = services.slice(0, 4);
-
   return (
     <section className="py-24 bg-bg">
       <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
-        <SectionHeader
-          label="What We Do"
-          title="Services Built for Scale"
-          subtitle="From idea to production — we cover every layer of the stack."
-        />
-
-        {/* TODO: implement card grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {preview.map((service, i) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="border border-border rounded-2xl p-8 hover:border-accent-purple hover:shadow-lg transition-all group cursor-pointer"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <span className="text-sm font-bold text-accent-purple">{service.number}</span>
-                <ArrowUpRight size={18} className="text-fg-faint group-hover:text-accent-orange transition-colors" />
-              </div>
-              <h3 className="text-xl font-bold text-fg mb-2">{service.title}</h3>
-              <p className="text-fg-muted text-sm leading-relaxed">{service.description}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="text-center">
-          <Link href="/services" className="inline-flex items-center gap-2 text-accent-orange font-semibold hover:gap-3 transition-all">
-            View All Services <ArrowUpRight size={16} />
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <SectionHeader
+            label="What We Do"
+            title="Services built for scale"
+            subtitle="From first sketch to production traffic — we cover every layer of the stack."
+          />
+          <Link
+            href="/services"
+            className="hidden md:inline-flex items-center gap-2 text-accent-orange font-semibold shrink-0 transition-all hover:gap-3"
+          >
+            View all services
+            <ArrowUpRight size={16} />
           </Link>
         </div>
+
+        <motion.div
+          variants={staggerContainer(0.1)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          {featuredServices.map((service) => (
+            <motion.div key={service.id} variants={fadeUp}>
+              <Link
+                href={`/services#${service.id}`}
+                className="group relative flex flex-col h-full border border-border rounded-2xl p-8 bg-bg overflow-hidden transition-all duration-300 hover:border-accent-purple hover:shadow-xl hover:-translate-y-1"
+              >
+                {/* Wash that fades in on hover */}
+                <span
+                  className="absolute inset-0 bg-gradient-to-br from-accent-purple/[0.06] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  aria-hidden
+                />
+
+                <div className="relative flex items-start justify-between mb-5">
+                  <span className="font-serif text-sm font-bold text-accent-purple">
+                    {service.number}
+                  </span>
+                  <ArrowUpRight
+                    size={20}
+                    className="text-fg-muted/30 transition-all duration-300 group-hover:text-accent-orange group-hover:rotate-45"
+                  />
+                </div>
+
+                <h3 className="relative text-xl font-bold text-fg mb-3">
+                  {service.title}
+                </h3>
+                <p className="relative text-fg-muted text-sm leading-relaxed flex-1">
+                  {service.summary}
+                </p>
+
+                <div className="relative flex flex-wrap gap-2 mt-6">
+                  {service.tags.slice(0, 3).map((tag) => (
+                    <Badge key={tag} label={tag} color="purple" />
+                  ))}
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <Link
+          href="/services"
+          className="md:hidden inline-flex items-center gap-2 text-accent-orange font-semibold self-center"
+        >
+          View all services
+          <ArrowUpRight size={16} />
+        </Link>
       </div>
     </section>
   );

@@ -1,81 +1,111 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import CTASection from "@/components/layout/CTASection";
 import SectionHeader from "@/components/ui/SectionHeader";
-import { services } from "@/data/services";
-import SplineEmbed from "@/components/3d/SplineEmbed";
+import Reveal from "@/components/ui/Reveal";
+import ServiceList from "@/components/services/ServiceList";
+import LazyScene from "@/components/3d/LazyScene";
+import Marquee from "@/components/home/Marquee";
 
 export const metadata: Metadata = {
-  title: "Services — Codecrons",
-  description: "Custom software development, SaaS, AI, automation, and design services from Codecrons.",
+  title: "Services",
+  description:
+    "Custom software development, SaaS products, AI integration, automation, mobile apps, and tech consulting from Codecrons.",
+  alternates: { canonical: "/services" },
 };
 
-// TODO: Implement Services page
-//
-// Layout:
-//   1. Page hero — headline + sub-text + Spline decorative scene on the right
-//      Spline URL: TODO — add a relevant Spline scene URL
-//   2. Full services list — all items from data/services.ts
-//      Each service as a large numbered row (like the Framer template)
-//      Number | Title + Tags | Description | (hover reveals arrow)
-//   3. Bottom CTA — "Ready to start?" + Book a Call button
-//
-// 3D: SplineEmbed component, right side of hero area
-// Animate: Framer Motion fade-up on each service row (stagger)
+const PROCESS = [
+  {
+    step: "01",
+    title: "Discovery",
+    body: "A paid, fixed-length scoping phase. We map the problem, agree what is in and out, and produce a costed plan you own — whether or not you build it with us.",
+  },
+  {
+    step: "02",
+    title: "Design",
+    body: "Flows and interfaces for the screens that carry the most risk, prototyped before anything is engineered so the expensive decisions get made early.",
+  },
+  {
+    step: "03",
+    title: "Build",
+    body: "Weekly increments on a staging environment you can click through. Nothing is saved for a big reveal at the end.",
+  },
+  {
+    step: "04",
+    title: "Handover",
+    body: "Deployed to infrastructure you control, with documentation and a walkthrough for whoever maintains it next — including if that is not us.",
+  },
+];
+
 export default function ServicesPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-24 min-h-screen bg-bg">
+      <main className="pt-16">
         {/* Hero */}
-        <section className="py-20 max-w-7xl mx-auto px-6">
-          <SectionHeader
-            label="Services"
-            title="Everything You Need to Build & Scale"
-            subtitle="From initial concept to production — we handle the full stack."
-          />
-          {/* TODO: Add Spline scene here */}
-        </section>
+        <section className="relative py-20 lg:py-28 overflow-hidden">
+          <div className="absolute inset-0 dot-grid opacity-50" aria-hidden />
 
-        {/* Services list */}
-        <section className="py-12 max-w-7xl mx-auto px-6">
-          {services.map((service, i) => (
-            <div
-              key={service.id}
-              id={service.id}
-              className="flex flex-col md:flex-row gap-6 py-10 border-b border-border group"
-            >
-              <span className="text-sm font-bold text-accent-purple w-12 shrink-0 pt-1">
-                {service.number}
-              </span>
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-fg mb-3">{service.title}</h2>
-                <p className="text-fg-muted leading-relaxed">{service.description}</p>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {service.tags.map((tag) => (
-                    <span key={tag} className="px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple text-xs font-semibold">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+          <div className="relative max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <Reveal>
+              <SectionHeader
+                label="Services"
+                title="Everything you need to build and scale"
+                subtitle="Six practices, one team. Most engagements combine two or three — we scope them together rather than selling them separately."
+              />
+            </Reveal>
+
+            {/* Decorative 3D accent (swap in a Spline URL via SplineEmbed if you publish one) */}
+            <Reveal direction="left" delay={0.15} className="hidden lg:block">
+              <div className="relative h-[400px] scene-glow">
+                <LazyScene scene="decor" />
               </div>
-            </div>
-          ))}
+            </Reveal>
+          </div>
         </section>
 
-        {/* CTA */}
-        <section className="py-20 text-center max-w-2xl mx-auto px-6">
-          <h2 className="font-serif text-3xl font-bold text-fg mb-4">Ready to start?</h2>
-          <p className="text-fg-muted mb-8">Let's talk about your project. No commitments.</p>
-          <a
-            href="https://calendly.com/codecrons"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 rounded-full bg-accent-orange text-white font-semibold hover:opacity-90 transition-opacity"
-          >
-            Book a Free Call
-          </a>
+        <Marquee />
+
+        {/* Full service list */}
+        <section className="py-16 lg:py-24 max-w-7xl mx-auto px-6">
+          <ServiceList />
         </section>
+
+        {/* How we work */}
+        <section className="py-20 bg-bg-subtle">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
+            <Reveal>
+              <SectionHeader
+                label="Process"
+                title="How an engagement runs"
+                subtitle="The same four phases whether the project is four weeks or four months."
+                align="center"
+              />
+            </Reveal>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {PROCESS.map((phase, i) => (
+                <Reveal key={phase.step} delay={i * 0.1}>
+                  <div className="h-full bg-bg border border-border rounded-2xl p-7 transition-all duration-300 hover:border-accent-purple hover:shadow-lg hover:-translate-y-1">
+                    <span className="font-serif text-3xl font-bold text-accent-orange/25">
+                      {phase.step}
+                    </span>
+                    <h3 className="font-bold text-fg mt-3 mb-2">{phase.title}</h3>
+                    <p className="text-fg-muted text-sm leading-relaxed">
+                      {phase.body}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <CTASection
+          title="Not sure which you need?"
+          subtitle="Describe the problem rather than the solution. We will tell you what it actually takes — and say so if it is not us."
+        />
       </main>
       <Footer />
     </>

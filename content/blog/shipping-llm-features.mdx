@@ -1,0 +1,85 @@
+---
+title: "Shipping LLM Features That Survive Contact With Users"
+date: "2026-05-02"
+excerpt: "A demo that works on five examples tells you almost nothing. What separates an AI prototype from an AI feature is evaluation, cost control, and a plan for being wrong."
+author: "Codecrons"
+tags: ["AI", "Engineering"]
+---
+
+Getting a language model to do something impressive takes an afternoon.
+Getting one to do the same thing reliably, for every user, at a cost you can
+predict, is a different project entirely — and it is the one that actually
+ships.
+
+## Start with the failure mode, not the happy path
+
+Before writing a prompt, we ask: **what happens when this is wrong?**
+
+The answer determines the whole architecture. A model that drafts an internal
+summary can be wrong occasionally at low cost — a human reads it next. A model
+that categorises an invoice and triggers a payment cannot. Those are not the
+same feature with different prompts; they need different levels of validation,
+different escalation paths, and sometimes a different decision about whether to
+use a model at all.
+
+A useful rule: if you cannot describe what a wrong answer costs, you are not
+ready to build the feature.
+
+## Evaluation before iteration
+
+The single biggest difference between a prototype and a product is a test set.
+
+Not a benchmark — your own data. Thirty to fifty real examples with known
+correct outputs, collected before any prompt tuning begins. Without it, prompt
+iteration is guesswork: you change the wording, the three cases you happened to
+check look better, and you have no idea what you broke.
+
+With it, every change produces a number. That number is what turns "this feels
+better" into a decision you can defend.
+
+```ts
+// The shape that matters more than the prompt
+type EvalCase = {
+  input: string;
+  expected: StructuredOutput;
+  // Why this case is in the set — regression, edge case, common path
+  rationale: string;
+};
+```
+
+We keep the eval set in the repo next to the code it tests, and we add a case
+every time something fails in production. Over a year that set becomes the most
+valuable artefact in the project.
+
+## Structure the output, always
+
+Free-form text is convenient for a demo and painful in production. Anything a
+model produces that another system consumes should be a schema-validated
+structure, parsed and rejected on failure like any other untrusted input.
+
+This is not about the model being unreliable. It is about the boundary being a
+boundary. You would validate a webhook payload from a vendor you trust; a model
+response deserves the same treatment.
+
+## Cost is a design constraint
+
+Token cost behaves differently from normal infrastructure cost: it scales with
+usage in a way that is easy to miss until the invoice arrives. Before launch we
+work out the cost per operation and multiply it by a realistic upper bound on
+volume.
+
+Sometimes the answer changes the design — a smaller model for triage with
+escalation to a larger one, caching on repeated inputs, or batching that turns
+a hundred calls into one. These are the same optimisations you would apply to
+any expensive operation. They just get skipped more often, because the
+prototype was cheap.
+
+## What we actually ship
+
+Every LLM feature we deliver comes with three things beyond the code: the
+evaluation set, a cost-per-operation figure, and a written description of the
+cases where it is known to underperform.
+
+The last one matters most. A feature with documented limits gets used well. A
+feature that claims to work everywhere gets trusted in exactly the situation it
+handles worst.

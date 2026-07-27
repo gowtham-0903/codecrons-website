@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import CTASection from "@/components/layout/CTASection";
 import Hero from "@/components/home/Hero";
 import Marquee from "@/components/home/Marquee";
 import Stats from "@/components/home/Stats";
@@ -9,9 +10,9 @@ import DeviceSection from "@/components/home/DeviceSection";
 import TechStack from "@/components/home/TechStack";
 import PricingTeaser from "@/components/home/PricingTeaser";
 
-// Home page — assembles all sections in order
-// Section order: Hero → Marquee → Stats → Services → Testimonials
-//                → Device 3D → TechStack → Pricing → Footer
+// Home page — assembles all sections in order.
+// Hero → Marquee → Stats → Services → Testimonials
+//      → Device 3D → TechStack → Pricing → CTA → Footer
 export default function HomePage() {
   return (
     <>
@@ -21,10 +22,12 @@ export default function HomePage() {
         <Marquee />
         <Stats />
         <ServicesPreview />
+        {/* Renders nothing until real quotes exist in data/testimonials.ts */}
         <Testimonials />
         <DeviceSection />
         <TechStack />
         <PricingTeaser />
+        <CTASection />
       </main>
       <Footer />
     </>

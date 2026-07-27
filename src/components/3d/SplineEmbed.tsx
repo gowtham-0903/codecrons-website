@@ -1,31 +1,48 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import DecorScene from "@/components/3d/DecorScene";
 
 interface SplineEmbedProps {
-  url: string;        // Spline scene URL from spline.design
+  /**
+   * Public Spline scene URL (the "my.spline.design/…" link from the
+   * Share → Embed dialog). Leave undefined to render the in-house R3F
+   * decorative scene instead.
+   */
+  url?: string;
+  title?: string;
   className?: string;
 }
 
-// TODO: Implement Spline embed wrapper
-// Install: npm install @splinetool/react-spline
-// Then replace the placeholder div below with:
-//
-//   import Spline from "@splinetool/react-spline";
-//   <Spline scene={url} className={cn("w-full h-full", className)} />
-//
-// Spline scenes used in this project:
-//   - Services page: TODO — add Spline scene URL
-//   - Contact page: TODO — add Spline scene URL
-//
-// Note: Spline scenes are heavy. Lazy-load this component with:
-//   dynamic(() => import("@/components/3d/SplineEmbed"), { ssr: false })
+/**
+ * Spline wrapper.
+ *
+ * Uses Spline's iframe embed rather than @splinetool/react-spline — it costs
+ * nothing in bundle size and works without an extra dependency. When no URL
+ * is configured it falls back to <DecorScene />, so both Services and Contact
+ * render a finished 3D accent today and can be swapped to a real Spline scene
+ * by passing `url` once one is published.
+ */
+export default function SplineEmbed({
+  url,
+  title = "Decorative 3D scene",
+  className,
+}: SplineEmbedProps) {
+  if (!url) {
+    return (
+      <div className={cn("relative w-full h-full scene-glow", className)}>
+        <DecorScene />
+      </div>
+    );
+  }
 
-export default function SplineEmbed({ url, className }: SplineEmbedProps) {
   return (
-    <div className={cn("w-full h-full flex items-center justify-center bg-bg-subtle rounded-2xl border border-border", className)}>
-      {/* TODO: replace with <Spline scene={url} /> once package is installed */}
-      <p className="text-fg-muted text-sm">Spline scene: {url}</p>
-    </div>
+    <iframe
+      src={url}
+      title={title}
+      loading="lazy"
+      className={cn("w-full h-full border-0 rounded-2xl", className)}
+      allow="autoplay; fullscreen; xr-spatial-tracking"
+    />
   );
 }

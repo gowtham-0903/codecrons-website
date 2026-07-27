@@ -1,21 +1,25 @@
 import { cn } from "@/lib/utils";
-import { HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  hover?: boolean; // enable hover lift + border color change
+  /** Adds a lift + accent border on hover. */
+  hover?: boolean;
 }
 
-// TODO: Implement card component
-// Default: white bg, border-border, rounded-2xl, p-6
-// hover=true: adds hover:shadow-lg hover:border-accent-purple transition
-export default function Card({ hover = false, className, children, ...props }: CardProps) {
-  // TODO: implement
+/** Base surface for every boxed block on the site. */
+export default function Card({
+  hover = false,
+  className,
+  children,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
         "bg-bg border border-border rounded-2xl p-6",
-        hover && "transition-all cursor-pointer",
-        className
+        hover &&
+          "transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-accent-purple hover:-translate-y-1",
+        className,
       )}
       {...props}
     >

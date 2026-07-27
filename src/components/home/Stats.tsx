@@ -1,57 +1,74 @@
 "use client";
 
-import { motion, useInView } from "motion/react-client";
-import { useRef, useState, useEffect } from "react";
+import { animate, motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 const STATS = [
   { value: 50, suffix: "+", label: "Projects Delivered" },
   { value: 30, suffix: "+", label: "Happy Clients" },
-  { value: 5,  suffix: "+", label: "Years of Experience" },
-  { value: 3,  suffix: "",  label: "Products Launched" },
+  { value: 5, suffix: "+", label: "Years of Experience" },
+  { value: 3, suffix: "", label: "Products Launched" },
 ];
 
-// TODO: Implement animated stats section
-// Each stat uses a count-up animation when it enters the viewport (useInView)
-// Layout: 4 columns on desktop, 2x2 on mobile
-// Background: bg-fg (black) to create contrast with surrounding white sections
-// Text: text-bg (white)
-// Number text: very large (text-6xl), accent-orange color
-// Animate on scroll: only triggers once (useInView with once:true)
+/** Counts from 0 to `to` once the element first enters the viewport. */
 function CountUp({ to, suffix }: { to: number; suffix: string }) {
-  const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!inView) return;
-    let start = 0;
-    const duration = 1500;
-    const step = Math.ceil(to / (duration / 16));
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= to) { setCount(to); clearInterval(timer); }
-      else setCount(start);
-    }, 16);
-    return () => clearInterval(timer);
+    const controls = animate(0, to, {
+      duration: 1.6,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (latest) => setCount(Math.round(latest)),
+    });
+    return () => controls.stop();
   }, [inView, to]);
 
-  return <span ref={ref}>{count}{suffix}</span>;
+  return (
+    <span ref={ref} className="tabular-nums">
+      {count}
+      {suffix}
+    </span>
+  );
 }
 
 export default function Stats() {
-  // TODO: style this properly
   return (
-    <section className="bg-fg py-20">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-        {STATS.map((stat) => (
-          <div key={stat.label} className="flex flex-col gap-2">
-            <p className="text-5xl font-bold text-accent-orange font-serif">
-              <CountUp to={stat.value} suffix={stat.suffix} />
-            </p>
-            <p className="text-bg/70 text-sm font-medium">{stat.label}</p>
-          </div>
+    <section className="relative bg-fg py-20 overflow-hidden">
+      {/* Ambient colour wash */}
+      <div
+        className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl opacity-20 bg-accent-purple"
+        aria-hidden
+      />
+      <div
+        className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl opacity-[0.12] bg-accent-orange"
+        aria-hidden
+      />
+
+      <dl className="relative max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8 text-center">
+        {STATS.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="flex flex-col gap-2"
+          >
+            <dt className="sr-only">{stat.label}</dt>
+            <dd className="flex flex-col gap-2">
+              <span className="text-5xl lg:text-6xl font-bold text-accent-orange font-serif">
+                <CountUp to={stat.value} suffix={stat.suffix} />
+              </span>
+              <span className="text-bg/60 text-sm font-medium tracking-wide">
+                {stat.label}
+              </span>
+            </dd>
+          </motion.div>
         ))}
-      </div>
+      </dl>
     </section>
   );
 }
