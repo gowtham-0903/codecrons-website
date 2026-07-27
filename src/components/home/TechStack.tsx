@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react-client";
 import Image from "next/image";
 import { techStack } from "@/data/techStack";
 import SectionHeader from "@/components/ui/SectionHeader";

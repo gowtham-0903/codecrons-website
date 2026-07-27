@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react-client";
 import { testimonials } from "@/data/testimonials";
 import SectionHeader from "@/components/ui/SectionHeader";
 

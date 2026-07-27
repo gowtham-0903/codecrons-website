@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react-client";
 import dynamic from "next/dynamic";
 
 // Lazy-load 3D to avoid SSR issues

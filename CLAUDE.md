@@ -14,33 +14,58 @@ Read it fully before writing any code.
 
 ---
 
+## Skills — Invoke These Before Writing Code
+
+Three skills are installed for this project. **Read the right skill before starting each task.**
+
+| Skill | Command | When to use |
+|---|---|---|
+| **motion-react** | `/motion-react` | Any animation — scroll, hover, gestures, exit, layout transitions, spring physics |
+| **ui-ux-pro-max** | `/ui-ux-pro-max:ui-ux-pro-max` | UI/UX design decisions, component layout, spacing, visual hierarchy, accessibility |
+| **framer** | `/framer` | Editing the Framer source project directly (canvas, CMS, publishing) |
+
+Full implementation patterns are in `.claude/skills/frontend.md`.
+
+---
+
 ## Tech Stack
 
 | Layer | Tool | Notes |
 |---|---|---|
 | Framework | Next.js 15 (App Router) | TypeScript, SSG/SSR |
 | Styling | Tailwind CSS v4 | Utility-first, no CSS modules |
-| Page animations | Framer Motion | Scroll reveals, page transitions |
+| Page animations | **motion** (`motion/react-client`) | New canonical package name — NOT `framer-motion` |
 | 3D (custom scenes) | React Three Fiber + @react-three/drei | Hero, globe, device mockup, particles |
 | 3D (decorative) | Spline | Embedded on Services and Contact pages |
-| UI primitives | shadcn/ui | Accessible base components |
 | Icons | Lucide React | Only use Lucide — no mixing icon sets |
 | Fonts | Public Sans + PT Serif | Loaded via `next/font/google` |
 | Forms | React Hook Form + Zod | Validation on client + server |
 | Email | Resend | Contact form submissions → hi@codecrons.com |
 | Blog | MDX (next-mdx-remote) | Posts live in `/content/blog/*.mdx` |
-| Booking | Calendly embed | Inline embed on Contact page |
+| Booking | Calendly embed (`react-calendly`) | Inline embed on Contact page |
 
-### Install commands (run once)
+### Animation import — CRITICAL
+
+Always use `"motion/react-client"` in this Next.js App Router project:
+
+```tsx
+"use client"
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "motion/react-client"
+```
+
+Never import from `"framer-motion"` or `"motion/react"` — use `"motion/react-client"` only.
+
+### Install commands (run once after cloning)
 
 ```bash
-npm install framer-motion lucide-react clsx tailwind-merge
-npm install @react-three/fiber @react-three/drei three
+npm install
+npm install motion @react-three/fiber @react-three/drei three
 npm install @types/three --save-dev
 npm install @splinetool/react-spline
 npm install react-hook-form zod @hookform/resolvers
 npm install resend
 npm install next-mdx-remote gray-matter
+npm install react-calendly
 ```
 
 ---

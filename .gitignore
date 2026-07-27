@@ -30,6 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# source assets — not for git
+stock images/
+
 # env files — never commit .env.local
 .env.local
 .env*.local
