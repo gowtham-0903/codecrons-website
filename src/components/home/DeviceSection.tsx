@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react-client";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, Check } from "lucide-react";
 import LazyScene from "@/components/3d/LazyScene";

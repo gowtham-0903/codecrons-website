@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react-client";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { featuredServices } from "@/data/services";
