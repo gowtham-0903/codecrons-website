@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Public_Sans, PT_Serif } from "next/font/google";
 import { site } from "@/lib/site";
 import StructuredData from "@/components/layout/StructuredData";
+import DevWarningFilter from "@/components/layout/DevWarningFilter";
 import "./globals.css";
 
 // Body / UI typeface
@@ -63,9 +64,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${publicSans.variable} ${ptSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-bg text-fg">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-bg text-fg">
+        <DevWarningFilter />
         <StructuredData />
         {children}
       </body>
