@@ -60,15 +60,13 @@ export default function Footer() {
               </a>
             ))}
 
-            <a
-              href={site.bookCallUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/contact"
               className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-accent-orange text-white font-semibold text-sm w-fit transition-all hover:opacity-90 hover:-translate-y-0.5"
             >
               Book a Call
               <ArrowUpRight size={15} />
-            </a>
+            </Link>
           </div>
         </div>
 

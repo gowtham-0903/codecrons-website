@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { navLinks, site } from "@/lib/site";
+import { navLinks } from "@/lib/site";
 import Logo from "@/components/ui/Logo";
 
 export default function Navbar() {
@@ -75,15 +75,13 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <a
-          href={site.bookCallUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/contact"
           className="hidden md:inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent-orange text-white font-semibold text-sm transition-all hover:opacity-90 hover:-translate-y-0.5 hover:shadow-lg"
         >
           Book a Call
           <ArrowUpRight size={15} />
-        </a>
+        </Link>
 
         <button
           className="md:hidden text-fg p-1"
@@ -129,15 +127,14 @@ export default function Navbar() {
               ))}
             </ul>
             <div className="px-6 pb-6">
-              <a
-                href={site.bookCallUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/contact"
+                onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-accent-orange text-white font-semibold text-sm"
               >
                 Book a Call
                 <ArrowUpRight size={15} />
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

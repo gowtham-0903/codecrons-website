@@ -8,15 +8,16 @@ export const site = {
     "Codecrons is a full-stack product studio building custom software, SaaS products, AI integrations, and workflow automation for businesses worldwide.",
   url: "https://codecrons.com",
   email: "hi@codecrons.com",
-  bookCallUrl: "https://calendly.com/codecrons",
+  bookCallUrl: "/contact",
   // Calendly username/event path used by the inline widget on /contact
   calendlyUrl: "https://calendly.com/codecrons",
 } as const;
 
 export const navLinks = [
-  { label: "Services", href: "/services" },
-  { label: "Work", href: "/portfolio" },
+  { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Work", href: "/portfolio" },
+  { label: "Services", href: "/services" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ] as const;
